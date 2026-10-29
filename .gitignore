@@ -1,0 +1,6 @@
+# binary
+/kbot
+
+# local secrets
+.env
+*.token
