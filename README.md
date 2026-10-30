@@ -2,7 +2,7 @@
 
 A small Telegram bot written in Go with [cobra](https://github.com/spf13/cobra) and [telebot v4](https://gopkg.in/telebot.v4).
 
-**Try it:** [t.me/BOT_USERNAME](https://t.me/BOT_USERNAME)
+**Try it:** [t.me/dtkbotedu_bot](https://t.me/dtkbotedu_bot)
 
 ## What it does
 
