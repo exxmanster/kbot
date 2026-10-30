@@ -43,8 +43,28 @@ environment variable.
 	},
 }
 
+// logIncoming writes every handled message and whether the reply went out to the log.
+func logIncoming(next telebot.HandlerFunc) telebot.HandlerFunc {
+	return func(c telebot.Context) error {
+		var from int64
+		if s := c.Sender(); s != nil {
+			from = s.ID
+		}
+		err := next(c)
+		status := "replied"
+		if err != nil {
+			status = "reply failed: " + err.Error()
+		}
+		log.Printf("%s from %d: %q -> %s", messageKind(c.Message()), from, c.Text(), status)
+		return err
+	}
+}
+
 // registerHandlers attaches a handler for every command and message type the bot understands.
+// The logger is added first, because telebot wraps each handler with the middleware set at Handle time.
 func registerHandlers(bot *telebot.Bot) {
+	bot.Use(logIncoming)
+
 	bot.Handle("/start", func(c telebot.Context) error {
 		return c.Send(fmt.Sprintf("Hi, %s! 👋\n\n%s", c.Sender().FirstName, helpText))
 	})
@@ -59,7 +79,6 @@ func registerHandlers(bot *telebot.Bot) {
 	})
 
 	bot.Handle(telebot.OnText, func(c telebot.Context) error {
-		log.Printf("text from %d: %q", c.Sender().ID, c.Text())
 		return c.Send(textReply(c.Text(), appVersion))
 	})
 	bot.Handle(telebot.OnPhoto, func(c telebot.Context) error {

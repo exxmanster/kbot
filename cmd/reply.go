@@ -41,6 +41,29 @@ func textReply(text, version string) string {
 	return "You said: " + strings.TrimSpace(text)
 }
 
+// messageKind names what a user sent, for the log.
+func messageKind(m *telebot.Message) string {
+	switch {
+	case m == nil:
+		return "update"
+	case m.Photo != nil:
+		return "photo"
+	case m.Sticker != nil:
+		return "sticker"
+	case m.Document != nil:
+		return "file"
+	case m.Voice != nil:
+		return "voice"
+	case m.Location != nil:
+		return "location"
+	case strings.HasPrefix(m.Text, "/"):
+		return "command"
+	case m.Text != "":
+		return "text"
+	}
+	return "other"
+}
+
 // humanSize formats a file size in bytes for chat replies.
 func humanSize(b int64) string {
 	const unit = 1024

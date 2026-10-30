@@ -3,6 +3,8 @@ package cmd
 import (
 	"strings"
 	"testing"
+
+	telebot "gopkg.in/telebot.v4"
 )
 
 func TestTextReply(t *testing.T) {
@@ -31,6 +33,28 @@ func TestHelpTextListsCommands(t *testing.T) {
 	for _, c := range botCommands {
 		if !strings.Contains(helpText, "/"+c.Text) {
 			t.Errorf("helpText does not mention /%s", c.Text)
+		}
+	}
+}
+
+func TestMessageKind(t *testing.T) {
+	tests := []struct {
+		in   *telebot.Message
+		want string
+	}{
+		{nil, "update"},
+		{&telebot.Message{Text: "/start"}, "command"},
+		{&telebot.Message{Text: "привіт"}, "text"},
+		{&telebot.Message{Photo: &telebot.Photo{}, Caption: "cat"}, "photo"},
+		{&telebot.Message{Sticker: &telebot.Sticker{}}, "sticker"},
+		{&telebot.Message{Document: &telebot.Document{}}, "file"},
+		{&telebot.Message{Voice: &telebot.Voice{}}, "voice"},
+		{&telebot.Message{Location: &telebot.Location{}}, "location"},
+		{&telebot.Message{}, "other"},
+	}
+	for _, tt := range tests {
+		if got := messageKind(tt.in); got != tt.want {
+			t.Errorf("messageKind(%+v) = %q, want %q", tt.in, got, tt.want)
 		}
 	}
 }
