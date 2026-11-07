@@ -1,5 +1,6 @@
-# binary
+# binaries
 /kbot
+/dist/
 
 # local secrets
 .env
